@@ -1,4 +1,4 @@
-# Meshtastic Heltec v2 Builds
+# Meshtastic Heltec v3 Builds
 
 This repository builds the **Meshtastic firmware** stable and pre-release for the  
 **Heltec WiFi LoRa 32 v3 with OLED_RU flag** 
