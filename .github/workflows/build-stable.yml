@@ -42,7 +42,7 @@ jobs:
         run: |
           sed -i '/-I variants\/esp32s3\/heltec_v3/a\  -D OLED_RU' variants/esp32s3/heltec_v3/platformio.ini
       
-      - name: Build Heltec V2 firmware
+      - name: Build Heltec V3 firmware
         run: |
           cd firmware
           pio run -e heltec-v3
