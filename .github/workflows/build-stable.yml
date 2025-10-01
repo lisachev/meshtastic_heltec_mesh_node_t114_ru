@@ -1,4 +1,4 @@
-name: Build Meshtastic Heltec V2 (on upstream release)
+name: Build Meshtastic Heltec V3 OLED_RU (on upstream release)
 
 on:
   workflow_dispatch:     # Manual trigger for testing
