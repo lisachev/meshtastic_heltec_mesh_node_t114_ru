@@ -1,0 +1,84 @@
+name: Build Alpha Meshtastic Heltec V3 OLED_RU (on latest alpha release)
+
+on:
+  workflow_dispatch:     # Manual trigger for testing
+  repository_dispatch:   # Optional external trigger
+    types: [meshtastic-alpha-release]
+  schedule:
+    - cron: "0 2 * * *"  # Fallback: run daily to check for new alpha releases
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PlatformIO
+        run: |
+          pip install -U pip
+          pip install platformio
+
+      - name: Fetch latest alpha Meshtastic release
+        id: get_alpha_release
+        run: |
+          # Fetch all releases
+          releases=$(curl -s https://api.github.com/repos/meshtastic/firmware/releases)
+          
+          # Find the latest alpha pre-release
+          LATEST_ALPHA_TAG=$(echo "$releases" | jq -r '[.[] | select(.prerelease) | select(.tag_name | contains("alpha"))] | first | .tag_name')
+
+          # Check if an alpha was found
+          if [ -z "$LATEST_ALPHA_TAG" ]; then
+            echo "No alpha release found, exiting."
+            exit 1
+          fi
+
+          echo "Latest Meshtastic alpha release: $LATEST_ALPHA_TAG"
+          echo "tag=$LATEST_ALPHA_TAG" >> $GITHUB_OUTPUT
+
+      - name: Check if new alpha version
+        id: check_alpha_version
+        run: |
+          if [ ! -f .latest_alpha_version ]; then
+            echo "No previous alpha version found, proceeding with build."
+            echo "$LATEST_ALPHA_TAG" > .latest_alpha_version
+            echo "build=true" >> $GITHUB_OUTPUT
+          elif [ "$(cat .latest_alpha_version)" != "$LATEST_ALPHA_TAG" ]; then
+            echo "New alpha version detected. Latest: $LATEST_ALPHA_TAG, Previous: $(cat .latest_alpha_version)"
+            echo $LATEST_ALPHA_TAG > .latest_alpha_version
+            echo "build=true" >> $GITHUB_OUTPUT
+          else
+            echo "No new alpha version detected. Skipping build."
+            echo "build=false" >> $GITHUB_OUTPUT
+
+      - name: Clone Meshtastic firmware at latest alpha release
+        if: ${{ steps.check_alpha_version.outputs.build == 'true' }}
+        run: |
+          git clone --depth=1 --branch ${{ steps.get_alpha_release.outputs.tag }} https://github.com/meshtastic/firmware.git
+
+      - name: Patch platformio.ini for OLED_RU
+        if: ${{ steps.check_alpha_version.outputs.build == 'true' }}
+        run: |
+          cd firmware/variants/esp32s3/heltec_v3
+          sed -i '/-I variants\/esp32s3\/heltec_v3/a\  -D OLED_RU' platformio.ini
+
+      - name: Build Heltec v3 firmware
+        if: ${{ steps.check_alpha_version.outputs.build == 'true' }}
+        run: |
+          cd firmware
+          pio run -e heltec-v3
+
+      - name: Upload firmware binaries
+        if: ${{ steps.check_alpha_version.outputs.build == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: heltec-v3-${{ steps.get_alpha_release.outputs.tag }}-ru
+          path: |
+            firmware/.pio/build/heltec-v3/firmware*.bin
