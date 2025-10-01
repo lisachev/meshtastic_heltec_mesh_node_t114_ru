@@ -8,7 +8,6 @@ This repository builds the **Meshtastic firmware** stable and pre-release for th
 - Each artifact includes:
   - `firmware.bin`
   - `firmware.factory.bin`
-- Or go to releases
 
 ## Flashing
 Example (Linux/macOS):
