@@ -28,7 +28,12 @@ jobs:
         run: |
           git clone --depth=1 --recurse-submodules https://github.com/meshtastic/firmware.git
           cd firmware
-          git checkout develop   # or 'master' if you prefer stable
+          git checkout develop  
+
+      - name: Debug paths
+        run: |
+          cd firmware
+          ls -R
 
       - name: Patch platformio.ini for OLED_RU
         run: |
