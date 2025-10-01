@@ -38,10 +38,10 @@ jobs:
           cd firmware
           git submodule update --init --recursive
 
-      - name: Debug paths
-        run: |
-          cd firmware
-          ls -R
+      # - name: Debug paths
+      #   run: |
+      #     cd firmware
+      #     ls -R
           
       - name: Patch platformio.ini for OLED_RU
         run: |
