@@ -12,7 +12,7 @@ This repository builds the **Meshtastic firmware** stable and pre-release for th
 ## Flashing
 Example (Linux/macOS):
 ```bash
-esptool.py --chip esp32 --port /dev/ttyUSB0 write_flash -z 0x0 firmware.factory.bin
+esptool.py --chip esp32s3 --port /dev/cu.usbserial-0001 --baud 115200 write_flash -z 0x0 firmware.factory.bin
 ```
 
 
