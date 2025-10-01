@@ -1,4 +1,4 @@
-name: Build Meshtastic Heltec V2
+name: Build Meshtastic Heltec V3 OLED_RU
 
 on:
   push:
