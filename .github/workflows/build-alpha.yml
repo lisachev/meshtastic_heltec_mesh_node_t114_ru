@@ -69,11 +69,11 @@ jobs:
           cd firmware/variants/esp32s3/heltec_v3
           sed -i '/-I variants\/esp32s3\/heltec_v3/a\  -D OLED_RU' platformio.ini
 
-      - name: Build Heltec v3 firmware
-        if: ${{ steps.check_alpha_version.outputs.build == 'true' }}
-        run: |
-          cd firmware
-          pio run -e heltec-v3
+      # - name: Build Heltec v3 firmware
+      #   if: ${{ steps.check_alpha_version.outputs.build == 'true' }}
+      #   run: |
+      #     cd firmware
+      #     pio run -e heltec-v3
 
       - name: Upload firmware binaries
         if: ${{ steps.check_alpha_version.outputs.build == 'true' }}
