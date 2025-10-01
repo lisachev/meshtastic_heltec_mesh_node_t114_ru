@@ -1,10 +1,10 @@
-# Meshtastic Heltec V2 Auto-Builds
+# Meshtastic Heltec v2 Builds
 
-This repository automatically builds the **Meshtastic firmware** for the  
-**Heltec WiFi LoRa 32 V2** board every night (development branch).
+This repository builds the **Meshtastic firmware** stable and pre-release for the  
+**Heltec WiFi LoRa 32 v3 with OLED_RU flag** 
 
 ## Downloads
-- Go to the [Actions tab](../../actions) → click the latest run → download the `heltec-v2-firmware` artifact.
+- Go to the [Actions tab](../../actions) → click the latest run → download the `heltec-v3-pre-###` or `heltec-v3-###` artifact.
 - Each artifact includes:
   - `firmware.bin`
   - `firmware.factory.bin`
@@ -14,3 +14,5 @@ This repository automatically builds the **Meshtastic firmware** for the
 Example (Linux/macOS):
 ```bash
 esptool.py --chip esp32 --port /dev/ttyUSB0 write_flash -z 0x0 firmware.factory.bin
+
+More info can be found in the original docs at https://meshtastic.org/docs/getting-started/flashing-firmware/esp32/cli-script/
