@@ -46,10 +46,10 @@ jobs:
         run: |
           sed -i '/-I variants\/esp32s3\/heltec_v3/a\  -D OLED_RU' firmware/variants/esp32s3/heltec_v3/platformio.ini
 
-      - name: Build Heltec V3 firmware
-        run: |
-          cd firmware
-          pio run -e heltec-v3
+      # - name: Build Heltec V3 firmware
+      #   run: |
+      #     cd firmware
+      #     pio run -e heltec-v3
 
       - name: Upload firmware binaries
         uses: actions/upload-artifact@v4
