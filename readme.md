@@ -14,5 +14,7 @@ This repository builds the **Meshtastic firmware** stable and pre-release for th
 Example (Linux/macOS):
 ```bash
 esptool.py --chip esp32 --port /dev/ttyUSB0 write_flash -z 0x0 firmware.factory.bin
+```
 
-More info can be found in the original docs at https://meshtastic.org/docs/getting-started/flashing-firmware/esp32/cli-script/
+
+More info can be found in the [original docs](https://meshtastic.org/docs/getting-started/flashing-firmware/esp32/cli-script/)
