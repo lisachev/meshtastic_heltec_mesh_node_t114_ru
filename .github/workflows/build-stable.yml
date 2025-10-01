@@ -45,7 +45,7 @@ jobs:
           
       - name: Patch platformio.ini for OLED_RU
         run: |
-          sed -i '/-I variants\/esp32s3\/heltec_v3/a\  -D OLED_RU' firmware/variants/esp32s3/heltec_v3/platformio.ini
+          sed -i '/-I variants\/esp32s3\/heltec_v3/a\  -D OLED_RU' firmware/variants/heltec_v3/platformio.ini
       
       - name: Build Heltec V3 firmware
         run: |
