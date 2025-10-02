@@ -1,0 +1,106 @@
+name: Prerelease Build Meshtastic Heltec v3 OLED_RU
+
+on:
+  workflow_dispatch:     # Manual trigger for testing
+  repository_dispatch:   # Optional external trigger
+    types: [meshtastic-prerelease]
+  schedule:
+    - cron: "0 3 * * *"  # Run daily to check for new prereleases
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PlatformIO
+        run: |
+          pip install -U pip
+          pip install platformio
+
+      - name: Fetch latest Meshtastic prerelease
+        id: get_release
+        run: |
+          # Get the first prerelease entry from the releases list
+          RELEASE_JSON=$(curl -s https://api.github.com/repos/meshtastic/firmware/releases | jq '[.[] | select(.prerelease==true)][0]')
+          LATEST_TAG=$(echo "$RELEASE_JSON" | jq -r .tag_name)
+          echo "Latest Meshtastic prerelease: $LATEST_TAG"
+          echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "ru_tag=${LATEST_TAG}-ru" >> $GITHUB_OUTPUT
+
+      - name: Check if already built
+        id: check_release
+        run: |
+          if gh release view "${{ steps.get_release.outputs.ru_tag }}" >/dev/null 2>&1; then
+            echo "Release already exists. Skipping build."
+            echo "skip_build=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip_build=false" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Stop job if already built
+        if: steps.check_release.outputs.skip_build == 'true'
+        run: exit 0
+
+      - name: Clone Meshtastic firmware at latest prerelease
+        if: steps.check_release.outputs.skip_build == 'false'
+        run: |
+          git clone --depth=1 --branch ${{ steps.get_release.outputs.tag }} https://github.com/meshtastic/firmware.git
+          cd firmware
+          git submodule update --init --recursive
+          
+      - name: Patch platformio.ini for OLED_RU
+        if: steps.check_release.outputs.skip_build == 'false'
+        run: |
+          sed -i '/-I variants\/esp32s3\/heltec_v3/a\  -D OLED_RU' firmware/variants/heltec_v3/platformio.ini
+      
+      - name: Build Heltec V3 firmware
+        if: steps.check_release.outputs.skip_build == 'false'
+        run: |
+          cd firmware
+          pio run -e heltec-v3
+
+      - name: Generate checksum
+        if: steps.check_release.outputs.skip_build == 'false'
+        id: checksum
+        run: |
+          FILE=$(ls firmware/.pio/build/heltec-v3/firmware*.bin | head -n 1)
+          SHA256=$(sha256sum "$FILE" | awk '{print $1}')
+          echo "sha256=$SHA256" >> $GITHUB_OUTPUT
+          echo "file=$FILE" >> $GITHUB_OUTPUT
+
+      - name: Upload firmware binaries (Actions artifacts)
+        if: steps.check_release.outputs.skip_build == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: heltec-v3-${{ steps.get_release.outputs.ru_tag }}
+          path: |
+            firmware/.pio/build/heltec-v3/firmware*.bin
+
+      - name: Publish GitHub Release
+        if: steps.check_release.outputs.skip_build == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_release.outputs.ru_tag }}
+          name: Meshtastic Heltec V3 RU **Prerelease** ${{ steps.get_release.outputs.tag }}
+          body: |
+            ⚠️ This is a **prerelease build** for **Heltec V3 OLED** with **RU support**  
+            🔗 Based on upstream prerelease [${{ steps.get_release.outputs.tag }}](https://github.com/meshtastic/firmware/releases/tag/${{ steps.get_release.outputs.tag }})
+
+            **Checksum (SHA256):**  
+            `${{ steps.checksum.outputs.sha256 }}`
+
+            Firmware attached below 👇
+          prerelease: true
+          files: |
+            ${{ steps.checksum.outputs.file }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
