@@ -70,14 +70,16 @@ jobs:
           cd firmware
           pio run -e heltec-v3
 
-      - name: Generate checksum
+      - name: Generate checksums
         if: steps.check_release.outputs.skip_build == 'false'
         id: checksum
         run: |
-          FILE=$(ls firmware/.pio/build/heltec-v3/firmware*.bin | head -n 1)
-          SHA256=$(sha256sum "$FILE" | awk '{print $1}')
-          echo "sha256=$SHA256" >> $GITHUB_OUTPUT
-          echo "file=$FILE" >> $GITHUB_OUTPUT
+          cd firmware/.pio/build/heltec-v3
+          for f in firmware*.bin; do
+            sha256sum "$f" >> SHA256SUMS.txt
+          done
+          echo "Checksums generated:"
+          cat SHA256SUMS.txt
 
       - name: Upload firmware binaries (Actions artifacts)
         if: steps.check_release.outputs.skip_build == 'false'
@@ -86,6 +88,7 @@ jobs:
           name: heltec-v3-${{ steps.get_release.outputs.ru_tag }}
           path: |
             firmware/.pio/build/heltec-v3/firmware*.bin
+            firmware/.pio/build/heltec-v3/SHA256SUMS.txt
 
       - name: Publish GitHub Release
         if: steps.check_release.outputs.skip_build == 'false'
@@ -97,12 +100,15 @@ jobs:
             ⚠️ This is a **prerelease build** for **Heltec V3 OLED** with **RU support**  
             🔗 Based on upstream prerelease [${{ steps.get_release.outputs.tag }}](https://github.com/meshtastic/firmware/releases/tag/${{ steps.get_release.outputs.tag }})
 
-            **Checksum (SHA256):**  
-            `${{ steps.checksum.outputs.sha256 }}`
+            **Checksums (SHA256):**
+            ```
+            $(cat firmware/.pio/build/heltec-v3/SHA256SUMS.txt)
+            ```
 
             Firmware attached below 👇
           prerelease: true
           files: |
-            ${{ steps.checksum.outputs.file }}
+            firmware/.pio/build/heltec-v3/firmware*.bin
+            firmware/.pio/build/heltec-v3/SHA256SUMS.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
