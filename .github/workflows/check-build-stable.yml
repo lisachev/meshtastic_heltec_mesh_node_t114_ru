@@ -1,4 +1,4 @@
-name: Stable Build Meshtastic Heltec v3 OLED_RU
+name: Stable Check-Build Meshtastic Heltec v3 OLED_RU
 
 on:
   workflow_dispatch:     # Manual trigger for testing
@@ -41,6 +41,7 @@ jobs:
             echo "skip_build=true" >> $GITHUB_OUTPUT
           else
             echo "skip_build=false" >> $GITHUB_OUTPUT
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
