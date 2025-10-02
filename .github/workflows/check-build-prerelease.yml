@@ -43,8 +43,10 @@ jobs:
             echo "skip_build=true" >> $GITHUB_OUTPUT
           else
             echo "skip_build=false" >> $GITHUB_OUTPUT
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
       - name: Stop job if already built
         if: steps.check_release.outputs.skip_build == 'true'
