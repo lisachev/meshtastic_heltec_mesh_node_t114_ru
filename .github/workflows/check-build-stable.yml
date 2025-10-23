@@ -60,7 +60,7 @@ jobs:
         if: steps.check_release.outputs.skip_build == 'false'
         run: |
           sed -i '/-I variants\/esp32s3\/heltec_v3/a\  -D OLED_RU' firmware/variants/heltec_v3/platformio.ini
-          sed -i '/-Ivariants\/nrf52840\/heltec_mesh_node_t114/a\  -D OLED_RU' firmware/variants/nrf52840/heltec_mesh_node_t114/platformio.ini
+          sed -i '/-Ivariants\/nrf52840\/heltec_mesh_node_t114/a\  -D OLED_RU' firmware/variants/heltec_mesh_node_t114/platformio.ini
 
       - name: Build Heltec V3 and T114 firmware
         if: steps.check_release.outputs.skip_build == 'false'
