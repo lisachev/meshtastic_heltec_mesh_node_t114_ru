@@ -76,14 +76,14 @@ jobs:
         if: steps.check_release.outputs.skip_build == 'false'
         run: |
           cd firmware/.pio/build/heltec-mesh-node-t114
-          mv firmware.zip heltec-mesh-node-t114-ru-firmware-${{ steps.get_release.outputs.tag }}.zip
+          mv firmware.uf2 heltec-mesh-node-t114-ru-firmware-${{ steps.get_release.outputs.tag }}.uf2
 
       - name: Generate checksums
         if: steps.check_release.outputs.skip_build == 'false'
         id: checksum
         run: |
           cd firmware/.pio/build/heltec-mesh-node-t114
-          for f in heltec-mesh-node-t114-ru-*.zip; do
+          for f in heltec-mesh-node-t114-ru-*.uf2; do
             sha256sum "$f" >> SHA256SUMS.txt
           done
           echo "Checksums generated:"
@@ -95,7 +95,7 @@ jobs:
         with:
           name: heltec-mesh-node-t114-${{ steps.get_release.outputs.ru_tag }}
           path: |
-            firmware/.pio/build/heltec-mesh-node-t114/heltec-mesh-node-t114-ru-*.zip
+            firmware/.pio/build/heltec-mesh-node-t114/heltec-mesh-node-t114-ru-*.uf2
             firmware/.pio/build/heltec-mesh-node-t114/SHA256SUMS.txt
 
       - name: Publish GitHub Release
@@ -105,7 +105,7 @@ jobs:
           tag_name: ${{ steps.get_release.outputs.ru_tag }}
           name: Meshtastic Heltec Mesh Node t114 RU ${{ steps.get_release.outputs.tag }}
           body: |
-            ✅ Stable build for **Heltec V3 OLED** with **RU support**  
+            ✅ Stable build for **Heltec Mesh Node t114 OLED** with **RU support**  
             🔗 Based on upstream release [${{ steps.get_release.outputs.tag }}](https://github.com/meshtastic/firmware/releases/tag/${{ steps.get_release.outputs.tag }})
 
             **Checksums (SHA256):**
@@ -115,7 +115,7 @@ jobs:
 
             Firmware attached below 👇
           files: |
-            firmware/.pio/build/heltec-mesh-node-t114/heltec-mesh-node-t114-ru-*.zip
+            firmware/.pio/build/heltec-mesh-node-t114/heltec-mesh-node-t114-ru-*.uf2
             firmware/.pio/build/heltec-mesh-node-t114/SHA256SUMS.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
