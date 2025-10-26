@@ -79,14 +79,14 @@ jobs:
         if: steps.check_release.outputs.skip_build == 'false'
         run: |
           cd firmware/.pio/build/heltec-mesh-node-t114
-          mv firmware.zip heltec-mesh-node-t114-ru-firmware-${{ steps.get_release.outputs.tag }}.zip
+          mv firmware.uf2 heltec-mesh-node-t114-ru-firmware-${{ steps.get_release.outputs.tag }}.uf2
 
       - name: Generate checksums
         if: steps.check_release.outputs.skip_build == 'false'
         id: checksum
         run: |
           cd firmware/.pio/build/heltec-mesh-node-t114
-          for f in heltec-mesh-node-t114-ru-*.bin; do
+          for f in heltec-mesh-node-t114-ru-*.uf2; do
             sha256sum "$f" >> SHA256SUMS.txt
           done
           echo "Checksums generated:"
@@ -98,7 +98,7 @@ jobs:
         with:
           name: heltec-mesh-node-t114-${{ steps.get_release.outputs.ru_tag }}
           path: |
-            firmware/.pio/build/heltec-mesh-node-t114/heltec-mesh-node-t114-ru-*.bin
+            firmware/.pio/build/heltec-mesh-node-t114/heltec-mesh-node-t114-ru-*.uf2
             firmware/.pio/build/heltec-mesh-node-t114/SHA256SUMS.txt
 
       - name: Publish GitHub Release
@@ -119,7 +119,7 @@ jobs:
             Firmware attached below 👇
           prerelease: true
           files: |
-            firmware/.pio/build/heltec-mesh-node-t114/heltec-v3-ru-*.zip
+            firmware/.pio/build/heltec-mesh-node-t114/heltec-mesh-node-t114-ru-*.uf2
             firmware/.pio/build/heltec-mesh-node-t114/SHA256SUMS.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
