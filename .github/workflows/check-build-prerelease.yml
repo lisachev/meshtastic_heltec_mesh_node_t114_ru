@@ -1,4 +1,4 @@
-name: Pre-release Check-Build Meshtastic Heltec v3 OLED_RU
+name: Pre-release Check-Build Meshtastic Heltec Mesh Node t114 OLED_RU
 
 on:
   workflow_dispatch:     # Manual trigger for testing
@@ -6,6 +6,11 @@ on:
     types: [meshtastic-prerelease]
   schedule:
     - cron: "0 3 * * *"  # Run daily to check for new prereleases
+
+permissions:
+  contents: write
+  actions: read
+  id-token: write
 
 jobs:
   build:
@@ -62,27 +67,26 @@ jobs:
       - name: Patch platformio.ini for OLED_RU
         if: steps.check_release.outputs.skip_build == 'false'
         run: |
-          sed -i '/-I variants\/esp32s3\/heltec_v3/a\  -D OLED_RU' firmware/variants/esp32s3/heltec_v3/platformio.ini
+          sed -i '/-DHELTEC_T114/a\  -D OLED_RU' variants/nrf52840/heltec_mesh_node_t114/platformio.ini
       
-      - name: Build Heltec V3 firmware
+      - name: Build Heltec Mesh Node t114 firmware
         if: steps.check_release.outputs.skip_build == 'false'
         run: |
           cd firmware
-          pio run -e heltec-v3
+          pio run -e heltec-mesh-node-t114
 
       - name: Rename binaries with versioned names
         if: steps.check_release.outputs.skip_build == 'false'
         run: |
-          cd firmware/.pio/build/heltec-v3
-          mv firmware.bin heltec-v3-ru-firmware-${{ steps.get_release.outputs.tag }}.bin
-          mv firmware.factory.bin heltec-v3-ru-factory-${{ steps.get_release.outputs.tag }}.bin
+          cd firmware/.pio/build/heltec-mesh-node-t114
+          mv firmware.zip heltec-mesh-node-t114-ru-firmware-${{ steps.get_release.outputs.tag }}.zip
 
       - name: Generate checksums
         if: steps.check_release.outputs.skip_build == 'false'
         id: checksum
         run: |
-          cd firmware/.pio/build/heltec-v3
-          for f in heltec-v3-ru-*.bin; do
+          cd firmware/.pio/build/heltec-mesh-node-t114
+          for f in heltec-mesh-node-t114-ru-*.bin; do
             sha256sum "$f" >> SHA256SUMS.txt
           done
           echo "Checksums generated:"
@@ -92,30 +96,30 @@ jobs:
         if: steps.check_release.outputs.skip_build == 'false'
         uses: actions/upload-artifact@v4
         with:
-          name: heltec-v3-${{ steps.get_release.outputs.ru_tag }}
+          name: heltec-mesh-node-t114-${{ steps.get_release.outputs.ru_tag }}
           path: |
-            firmware/.pio/build/heltec-v3/heltec-v3-ru-*.bin
-            firmware/.pio/build/heltec-v3/SHA256SUMS.txt
+            firmware/.pio/build/heltec-mesh-node-t114/heltec-mesh-node-t114-ru-*.bin
+            firmware/.pio/build/heltec-mesh-node-t114/SHA256SUMS.txt
 
       - name: Publish GitHub Release
         if: steps.check_release.outputs.skip_build == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.get_release.outputs.ru_tag }}
-          name: Meshtastic Heltec V3 RU **Prerelease** ${{ steps.get_release.outputs.tag }}
+          name: Meshtastic Heltec Mesh Node t114 RU **Prerelease** ${{ steps.get_release.outputs.tag }}
           body: |
-            ⚠️ This is a **prerelease build** for **Heltec V3 OLED** with **RU support**  
+            ⚠️ This is a **prerelease build** for **Heltec Mesh Node t114 OLED** with **RU support**  
             🔗 Based on upstream prerelease [${{ steps.get_release.outputs.tag }}](https://github.com/meshtastic/firmware/releases/tag/${{ steps.get_release.outputs.tag }})
 
             **Checksums (SHA256):**
             ```
-            $(cat firmware/.pio/build/heltec-v3/SHA256SUMS.txt)
+            $(cat firmware/.pio/build/heltec-mesh-node-t114/SHA256SUMS.txt)
             ```
 
             Firmware attached below 👇
           prerelease: true
           files: |
-            firmware/.pio/build/heltec-v3/heltec-v3-ru-*.bin
-            firmware/.pio/build/heltec-v3/SHA256SUMS.txt
+            firmware/.pio/build/heltec-mesh-node-t114/heltec-v3-ru-*.zip
+            firmware/.pio/build/heltec-mesh-node-t114/SHA256SUMS.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
