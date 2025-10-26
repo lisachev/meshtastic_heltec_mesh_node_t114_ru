@@ -1,4 +1,4 @@
-# Сборки Meshtastic для Heltec V3 с поддержкой кириллицы
+# Сборки Meshtastic для Heltec Mesh Node t114 с поддержкой кириллицы
 
 Этот репозиторий автоматически собирает **прошивку Meshtastic** как только появляется новый стабильный или пре-релиз (альфа) с добавлением флага **-D OLED_RU**, в соответствии с документацией.
 
@@ -29,10 +29,10 @@ esptool.py --chip esp32s3 --port /dev/cu.usbserial-0001 --baud 115200 write_flas
 # Meshtastic Heltec v3 Builds
 
 This repository builds the **Meshtastic firmware** stable and pre-release for the  
-**Heltec WiFi LoRa 32 v3 with OLED_RU flag** 
+**Heltec Heltec Mesh Node t114 with OLED_RU flag** 
 
 ## Downloads
-Go to the [Releases page](../../releases) →  download the `heltec-v3-ru-###` binary file from the Assets of a release of your choice.
+Go to the [Releases page](../../releases) →  download the `heltec-mesh-node-t114-ru-###` binary file from the Assets of a release of your choice.
 
  Always backup your settings prior proceeding to the flashing.
 
