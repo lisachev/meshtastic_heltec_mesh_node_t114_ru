@@ -7,6 +7,11 @@ on:
   schedule:
     - cron: "0 2 * * *"  # Run daily to check for new releases
 
+permissions:
+  contents: write
+  actions: read
+  id-token: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -71,9 +76,7 @@ jobs:
         if: steps.check_release.outputs.skip_build == 'false'
         run: |
           cd firmware/.pio/build/heltec-mesh-node-t114
-          ls -al
           mv firmware.zip heltec-mesh-node-t114-ru-firmware-${{ steps.get_release.outputs.tag }}.zip
-#          mv firmware.factory.bin heltec-mesh-node-t114-ru-factory-${{ steps.get_release.outputs.tag }}.bin
 
       - name: Generate checksums
         if: steps.check_release.outputs.skip_build == 'false'
