@@ -63,6 +63,20 @@ jobs:
           git clone --depth=1 --branch ${{ steps.get_release.outputs.tag }} https://github.com/meshtastic/firmware.git
           cd firmware
           git submodule update --init --recursive
+
+      - name: Debug path before patch
+        if: steps.check_release.outputs.skip_build == 'false'
+        run: |
+          echo "Current working directory:"
+          pwd
+          echo "Top-level files:"
+          ls -la
+          echo "Recursive list (depth 2):"
+          ls -R | head -n 200
+          echo "Contents of firmware directory (if exists):"
+          ls -la firmware || echo "No firmware directory found"
+          echo "Checking for heltec_mesh_node_t114 folder:"
+          find . -type d -name "heltec_mesh_node_t114" || echo "Not found"
           
       - name: Patch platformio.ini for OLED_RU
         if: steps.check_release.outputs.skip_build == 'false'
