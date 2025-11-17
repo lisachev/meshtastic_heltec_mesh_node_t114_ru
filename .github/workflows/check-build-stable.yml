@@ -65,6 +65,7 @@ jobs:
         if: steps.check_release.outputs.skip_build == 'false'
         run: |
           sed -i '/-DHELTEC_T114/a\  -D OLED_RU' firmware/variants/heltec_mesh_node_t114/platformio.ini
+          cat firmware/variants/heltec_mesh_node_t114/platformio.ini
 
       - name: Build Heltec Mesh Node t114 firmware
         if: steps.check_release.outputs.skip_build == 'false'
