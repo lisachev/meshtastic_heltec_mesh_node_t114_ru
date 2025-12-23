@@ -80,7 +80,7 @@ jobs:
         if: steps.check_release.outputs.skip_build == 'false'
         run: |
           cd firmware/.pio/build/heltec-mesh-node-t114
-          mv firmware.uf2 heltec-mesh-node-t114-ru-firmware-${{ steps.get_release.outputs.tag }}.uf2
+          mv firmware-heltec-mesh-node-t114-${{ steps.get_release.outputs.tag }}.uf2 heltec-mesh-node-t114-ru-firmware-${{ steps.get_release.outputs.tag }}.uf2
 
       - name: Generate checksums
         if: steps.check_release.outputs.skip_build == 'false'
