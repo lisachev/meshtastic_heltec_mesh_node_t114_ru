@@ -100,7 +100,7 @@ jobs:
         if: steps.check_release.outputs.skip_build == 'false'
         run: |
           cd firmware/.pio/build/heltec-mesh-node-t114
-          for f in *-t114-*.bin; do [[ "$f" == *-t114-ru-* ]] && continue; mv -- "$f" "${f/-t114-/-t114-ru-}"; done
+          for f in *-t114-*.uf2; do [[ "$f" == *-t114-ru-* ]] && continue; mv -- "$f" "${f/-t114-/-t114-ru-}"; done
 
 
       - name: Generate checksums
